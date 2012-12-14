@@ -12,9 +12,10 @@ notebook = '/path/to/your/file.ipynb'
 wp_blogid = ""
 post_language = "ES" ## "EN" for english and "ES" for spanish
 ## The category should exist in your wordpress
-categories = ["Recursos"] 
+categories = ["Recursos", "Básico", "Tutoriales"] 
 ## Tags for the post
-tags = [ "ipython", "XML-RPC", "prueba de concepto","ipynb", 'notebook']
+tags = [ "numpy", "numpy.recarray", "recarray","ipynb2wp", 'record array',
+         'recarray']
 ## Boolean value, 0 == not published (draft) and 1 == published
 status_published = 0
 ## That's all
@@ -48,7 +49,7 @@ title = escape(nbdata['metadata']['name'])
 post = ""
 
 ## type of information included in cells different than code or markdown
-formats = ['png','jpg','jpeg','gif','html']
+formats = ['png','jpg','jpeg','gif','html','stream']
 
 count = 0
 ## Obtaining info from the ipynb file (JSON)
@@ -79,7 +80,7 @@ for cell in nbdata['worksheets'][0]['cells'][:]:
                 
             if post_language == 'ES':
                 
-                post += """La salida del anterior código mostrará:"""
+                post += u"""La salida del anterior código mostrará:"""
                 
             post += """\n"""
             
@@ -89,7 +90,7 @@ for cell in nbdata['worksheets'][0]['cells'][:]:
                     
                     if formato in output.keys():
                         
-                        if formato != 'html':
+                        if formato != 'html' and formato != 'stream':
                             
                             fich = (output[formato]).decode('base64')
                             fich = xmlrpclib.Binary(fich)
@@ -115,6 +116,15 @@ for cell in nbdata['worksheets'][0]['cells'][:]:
                             post += """<img src="%s"/>""" % urlimg
                             post += """\n"""
                             
+                        elif formato == 'stream':
+                            
+                            post += """[sourcecode language='python']\n"""
+                            for line in output['text'][:]:
+                                
+                                post += line
+
+                            post += """[/sourcecode]"""
+
                         else:
                             
                             out, url = html2(text = output['text'][0], 
@@ -133,6 +143,10 @@ for cell in nbdata['worksheets'][0]['cells'][:]:
                                     post += """Enlace a <a href="%s">%s</a>\n""" % (url, url)
                                     
                             post += """\n"""
+
+post += """<h5><em>This post has been published on wordpress.com \
+from an ipython notebook using \
+<a href="https://github.com/kikocorreoso/ipynb2wp">ipynb2wp</a></em></h5>"""
 
 ## Publishing the post
 date_created = xmlrpclib.DateTime(datetime.datetime.now())
