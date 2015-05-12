@@ -1,4 +1,4 @@
-ipynb2wp
+ipynb2wp [OBSOLETE, please, see the following repo https://github.com/Pybonacci/ipy2wp]
 ========
 
 Script to publish an ipython notebook on a wordpress platform
